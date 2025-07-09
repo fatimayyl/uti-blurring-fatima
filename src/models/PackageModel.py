@@ -82,39 +82,36 @@ class Degree(Config):
     placeHolder: Literal["[-359, 359]"] = "[-359, 359]"
 
     class Config:
-        title = "Angle"
+        title = "Angleee"
 
 
-class PackageInputs(Inputs):
+class BlurringFatimaExecutorInputs(Inputs):
     inputImage: InputImage
 
 
-class PackageConfigs(Configs):
+class BlurringFatimaExecutorConfigs(Configs):
     degree: Degree
     drawBBox: KeepSideBBox
 
 
-class PackageOutputs(Outputs):
-    outputImage: OutputImage
-
-
-class PackageRequest(Request):
-    inputs: Optional[PackageInputs]
-    configs: PackageConfigs
+class BlurringFatimaExecutorRequest(Request):
+    inputs: Optional[BlurringFatimaExecutorInputs]
+    configs: BlurringFatimaExecutorConfigs
 
     class Config:
         json_schema_extra = {
             "target": "configs"
         }
 
+class BlurringFatimaExecutorOutputs(Outputs):
+    outputImage: OutputImage
 
-class PackageResponse(Response):
-    outputs: PackageOutputs
+class BlurringFatimaExecutorResponse(Response):
+    outputs: BlurringFatimaExecutorOutputs
 
-
-class PackageExecutor(Config):
-    name: Literal["Package"] = "Package"
-    value: Union[PackageRequest, PackageResponse]
+class BlurringFatimaExecutor(Config):
+    name: Literal["BlurringFatima"] = "BlurringFatima"
+    value: Union[BlurringFatimaExecutorRequest, BlurringFatimaExecutorResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
@@ -126,10 +123,9 @@ class PackageExecutor(Config):
             }
         }
 
-
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PackageExecutor]
+    value: Union[BlurringFatimaExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
@@ -139,10 +135,8 @@ class ConfigExecutor(Config):
             "target": "value"
         }
 
-
 class PackageConfigs(Configs):
     executor: ConfigExecutor
-
 
 class PackageModel(Package):
     configs: PackageConfigs
