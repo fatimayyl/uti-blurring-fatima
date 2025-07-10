@@ -2,7 +2,7 @@
 from sdks.novavision.src.helper.package import PackageHelper
 from components.BlurringFatima.src.models.PackageModel import (PackageModel, PackageConfigs, ConfigExecutor, BlurringFatimaExecutorOutputs, BlurringFatimaExecutorResponse, BlurringFatimaExecutor, OutputImage)
 
-BlurringFatimaExecutor
+
 def build_response(context):
     outputImage = OutputImage(value=context.image)
     blurringFatimaExecutorOutputs = BlurringFatimaExecutorOutputs(outputImage=outputImage)
