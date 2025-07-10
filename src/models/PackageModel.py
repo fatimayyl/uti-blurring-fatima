@@ -1,12 +1,10 @@
-
 from pydantic import Field, validator
-from typing import List, Optional, Union, Literal
+from typing import List, Optional, Union, Literal,Tuple
 from sdks.novavision.src.base.model import Package, Image, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
 
 
-
-class InputImage(Input):
-    name: Literal["inputImage"] = "inputImage"
+class InputBlurring(Input):
+    name: Literal["inputBlurring"] = "inputBlurring"
     value: Union[List[Image], Image]
     type: str = "object"
 
@@ -19,11 +17,27 @@ class InputImage(Input):
             return "list"
 
     class Config:
-        title = "Image"
+        title = "Blurring"
+
+class InputZoom(Input):
+    name: Literal["InputZoom"] = "InputZoom"
+    value: Union[List[Image], Image]
+    type: str = "object"
+
+    @validator("type", pre=True, always=True)
+    def set_type_based_on_value(cls, value, values):
+        value = values.get('value')
+        if isinstance(value, Image):
+            return "object"
+        elif isinstance(value, list):
+            return "list"
+
+    class Config:
+        title = "Zoom"
 
 
-class OutputImage(Output):
-    name: Literal["outputImage"] = "outputImage"
+class OutputBlurring(Output):
+    name: Literal["outputBlurring"] = "outputBlurring"
     value: Union[List[Image],Image]
     type: str = "object"
 
@@ -36,7 +50,23 @@ class OutputImage(Output):
             return "list"
 
     class Config:
-        title = "Image"
+        title = "Blurring"
+
+class OutputZoom(Output):
+    name: Literal["outputZoom"] = "outputZoom"
+    value: Union[List[Image],Image]
+    type: str = "object"
+
+    @validator("type", pre=True, always=True)
+    def set_type_based_on_value(cls, value, values):
+        value = values.get('value')
+        if isinstance(value, Image):
+            return "object"
+        elif isinstance(value, list):
+            return "list"
+
+    class Config:
+        title = "Zoom"
 
 
 class KeepSideFalse(Config):
@@ -86,13 +116,35 @@ class Degree(Config):
         title = "Angleee"
 
 
-class BlurringFatimaExecutorInputs(Inputs):
-    inputImage: InputImage
+class ZoomFatimaExecutorInputs(Inputs):
+    inputImage: InputZoom
 
+class BlurringFatimaExecutorInputs(Inputs):
+    inputImage: InputBlurring
+
+
+
+
+class ZoomFatimaExecutorConfigs(Configs):
+    degree: Degree
+    drawBBox: KeepSideBBox
 
 class BlurringFatimaExecutorConfigs(Configs):
     degree: Degree
     drawBBox: KeepSideBBox
+
+
+
+
+
+class ZoomFatimaExecutorRequest(Request):
+    inputs: Optional[ZoomFatimaExecutorInputs]
+    configs: ZoomFatimaExecutorConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
 
 
 class BlurringFatimaExecutorRequest(Request):
@@ -104,11 +156,42 @@ class BlurringFatimaExecutorRequest(Request):
             "target": "configs"
         }
 
+
+
+class ZoomFatimaExecutorOutputs(Outputs):
+    outputImage: OutputZoom
+
+
 class BlurringFatimaExecutorOutputs(Outputs):
-    outputImage: OutputImage
+    outputImage: OutputBlurring
+
+
+
+
+
+class ZoomFatimaExecutorResponse(Response):
+    outputs: ZoomFatimaExecutorOutputs
+
 
 class BlurringFatimaExecutorResponse(Response):
     outputs: BlurringFatimaExecutorOutputs
+
+
+
+class ZoomFatimaExecutor(Config):
+    name: Literal["ZoomFatimaExecutor"] = "ZoomFatimaExecutor"
+    value: Union[ZoomFatimaExecutorRequest, ZoomFatimaExecutorResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "ZoomFatima"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
+
 
 class BlurringFatimaExecutor(Config):
     name: Literal["BlurringFatimaExecutor"] = "BlurringFatimaExecutor"
@@ -124,17 +207,19 @@ class BlurringFatimaExecutor(Config):
             }
         }
 
+
+
+
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[BlurringFatimaExecutor]
+    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
+    restart: Literal[True] = True
 
     class Config:
-        title = "Task"
-        json_schema_extra = {
-            "target": "value"
-        }
+        title = "Type"
+
 
 class PackageConfigs(Configs):
     executor: ConfigExecutor
