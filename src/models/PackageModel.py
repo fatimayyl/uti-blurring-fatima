@@ -111,7 +111,7 @@ class BlurringFatimaExecutorResponse(Response):
     outputs: BlurringFatimaExecutorOutputs
 
 class BlurringFatimaExecutor(Config):
-    name: Literal["BlurringFatima"] = "BlurringFatima"
+    name: Literal["BlurringFatimaExecutor"] = "BlurringFatimaExecutor"
     value: Union[BlurringFatimaExecutorRequest, BlurringFatimaExecutorResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
