@@ -1,5 +1,8 @@
 """
     It is one of the preprocessing components in which the image is zoomed.
+    Zooms into the center of the image by a zoom factor.
+        zoom_factor > 1 → Zoom in
+        zoom_factor < 1 → Zoom out
 """
 
 import os
@@ -58,13 +61,13 @@ class ZoomFatimaExecutor(Component):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        if self.zoom_mode == "ZoomIn":
+        if self.zoom_mode.value == "ZoomIn":
             zoom_factor = self.zoom_in_factor
         else:
             zoom_factor = self.zoom_out_factor
 
-        img1.value = self.zoom(img1.value, zoom_factor=self.zoom_factor)
-        img2.value = self.zoom(img2.value, zoom_factor=self.zoom_factor)
+        img1.value = self.zoom(img1.value, zoom_factor=zoom_factor)
+        img2.value = self.zoom(img2.value, zoom_factor=zoom_factor)
 
         self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
         self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
