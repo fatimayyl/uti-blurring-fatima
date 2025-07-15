@@ -116,49 +116,37 @@ class Degree(Config):
     class Config:
         title = "Angleee"
 
-class ZoomInOption(Config):
-    name: Literal["ZoomIn"] = "ZoomIn"
-    value: Literal["ZoomIn"] = "ZoomIn"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-    dependentConfig: List["ZoomInFactor"]
-    class Config:
-        title = "Zoom In"
 
-class ZoomOutOption(Config):
-    name: Literal["ZoomOut"] = "ZoomOut"
-    value: Literal["ZoomOut"] = "ZoomOut"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-    dependentConfig: List["ZoomOutFactor"]
-    class Config:
-        title = "Zoom Out"
 
 class ZoomMode(Config):
     name: Literal["ZoomMode"] = "ZoomMode"
-    value: Union[ZoomInOption, ZoomOutOption]
-    type: Literal["object"] = "object"
+    value: Literal["ZoomIn", "ZoomOut"]
+    type: Literal["string"] = "string"
     field: Literal["dropdownlist"] = "dropdownlist"
+
     class Config:
         title = "Zoom Type"
 
-class ZoomInFactor(Config):
-    name: Literal["ZoomInFactor"] = "ZoomInFactor"
-    value: float = Field(default=1.2, ge=1.0, le=10.0)
-    type: Literal["number"] = "number"
-    field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["1.0 – 10.0"] = "1.0 – 10.0"
-    class Config:
-        title = "Zoom In Factor"
 
-class ZoomOutFactor(Config):
-    name: Literal["ZoomOutFactor"] = "ZoomOutFactor"
-    value: float = Field(default=0.8, ge=0.1, le=1.0)
+class ZoomFactor(Config):
+    name: Literal["ZoomFactor"] = "ZoomFactor"
+    value: float = Field(default=1.0)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["0.1 – 1.0"] = "0.1 – 1.0"
+    placeHolder: Literal["Zoom factor value"] = "Zoom factor value"
+
     class Config:
-        title = "Zoom Out Factor"
+        title = "Zoom Factor"
+
+    @validator("value")
+    def validate_zoom_factor(cls, v, values, **kwargs):
+        zoom_mode = values.get("__parent__").get("zoomMode").value  # özel çözüm gerekebilir
+        if zoom_mode == "ZoomIn" and not (1.0 <= v <= 10.0):
+            raise ValueError("ZoomIn seçildiyse ZoomFactor 1.0 – 10.0 arasında olmalıdır.")
+        elif zoom_mode == "ZoomOut" and not (0.1 <= v <= 1.0):
+            raise ValueError("ZoomOut seçildiyse ZoomFactor 0.1 – 1.0 arasında olmalıdır.")
+        return v
+
 
 
 class ZoomFatimaExecutorOutputs(Outputs):
@@ -167,8 +155,7 @@ class ZoomFatimaExecutorOutputs(Outputs):
 
 class ZoomFatimaExecutorConfigs(Configs):
     zoomMode: ZoomMode
-    zoomInFactor: ZoomInFactor
-    zoomOutFactor: ZoomOutFactor
+    zoomFactor: ZoomFactor
 
 class ZoomFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
