@@ -26,8 +26,7 @@ class ZoomFatimaExecutor(Component):
         self.request.model = PackageModel(**(self.request.data))
 
         self.zoom_mode = self.request.get_param("ZoomMode")
-        self.zoom_in_factor = self.request.get_param("ZoomInFactor")
-        self.zoom_out_factor = self.request.get_param("ZoomOutFactor")
+        self.zoom_factor = self.request.get_param("ZoomFactor")
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
 
@@ -61,13 +60,13 @@ class ZoomFatimaExecutor(Component):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        if self.zoom_mode.value == "ZoomIn":
-            zoom_factor = self.zoom_in_factor
-        else:
-            zoom_factor = self.zoom_out_factor
+        if self.zoom_mode == "ZoomIn" and not (1.0 <= self.zoom_factor <= 10.0):
+            raise ValueError("ZoomIn seçildiyse ZoomFactor 1.0 – 10.0 arasında olmalıdır.")
+        elif self.zoom_mode == "ZoomOut" and not (0.1 <= self.zoom_factor <= 1.0):
+            raise ValueError("ZoomOut seçildiyse ZoomFactor 0.1 – 1.0 arasında olmalıdır.")
 
-        img1.value = self.zoom(img1.value, zoom_factor=zoom_factor)
-        img2.value = self.zoom(img2.value, zoom_factor=zoom_factor)
+        img1.value = self.zoom(img1.value, zoom_factor=self.zoom_factor)
+        img2.value = self.zoom(img2.value, zoom_factor=self.zoom_factor)
 
         self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
         self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
