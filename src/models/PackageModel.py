@@ -166,6 +166,44 @@ class ZoomMode(Config):
     class Config:
         title = "Zoom Type"
 
+class GrayFatimaExecutorInputs(Inputs):
+    inputImageOne: InputImageOne
+    inputImageTwo: InputImageTwo
+
+
+class GrayFatimaExecutorConfigs(Configs):
+    degree: Degree
+    drawBBox: KeepSideBBox
+
+class GrayFatimaExecutorRequest(Request):
+    inputs: Optional[GrayFatimaExecutorInputs]
+    configs: GrayFatimaExecutorConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
+
+class GrayFatimaExecutorOutputs(Outputs):
+    outputImageOne: OutputImageOne
+    outputImageTwo: OutputImageTwo
+
+class GrayFatimaExecutorResponse(Response):
+    outputs: GrayFatimaExecutorOutputs
+
+class GrayFatimaExecutor(Config):
+    name: Literal["CAmine"] = "CAmine"
+    value: Union[GrayFatimaExecutorRequest, GrayFatimaExecutorResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Gray"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
 
 class ZoomFatimaExecutorOutputs(Outputs):
     outputImageOne: OutputImageOne
