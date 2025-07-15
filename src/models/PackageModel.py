@@ -116,19 +116,47 @@ class Degree(Config):
     class Config:
         title = "Angleee"
 
+class ZoomInOption(Config):
+    name: Literal["ZoomIn"] = "ZoomIn"
+    value: Literal["ZoomIn"] = "ZoomIn"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+    class Config:
+        title = "Zoom In"
 
-class ZoomFactor(Config):
-    """
-    Zoom factor > 1 for zoom in, < 1 for zoom out.
-    """
-    name: Literal["ZoomFactor"] = "ZoomFactor"
-    value: float = Field(default=1.2, ge=0.1, le=10.0)
+class ZoomOutOption(Config):
+    name: Literal["ZoomOut"] = "ZoomOut"
+    value: Literal["ZoomOut"] = "ZoomOut"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+    class Config:
+        title = "Zoom Out"
+
+class ZoomMode(Config):
+    name: Literal["ZoomMode"] = "ZoomMode"
+    value: Union[ZoomInOption, ZoomOutOption]
+    type: Literal["object"] = "object"
+    field: Literal["dropdownlist"] = "dropdownlist"
+    class Config:
+        title = "Zoom Type"
+
+class ZoomInFactor(Config):
+    name: Literal["ZoomInFactor"] = "ZoomInFactor"
+    value: float = Field(default=1.2, ge=1.0, le=10.0)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["0.1 – 10.0"] = "0.1 – 10.0"
-
+    placeHolder: Literal["1.0 – 10.0"] = "1.0 – 10.0"
     class Config:
-        title = "Zoom Factor"
+        title = "Zoom In Factor"
+
+class ZoomOutFactor(Config):
+    name: Literal["ZoomOutFactor"] = "ZoomOutFactor"
+    value: float = Field(default=0.8, ge=0.1, le=1.0)
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+    placeHolder: Literal["0.1 – 1.0"] = "0.1 – 1.0"
+    class Config:
+        title = "Zoom Out Factor"
 
 
 class ZoomFatimaExecutorOutputs(Outputs):
@@ -136,7 +164,9 @@ class ZoomFatimaExecutorOutputs(Outputs):
     outputImageTwo: OutputImageTwo
 
 class ZoomFatimaExecutorConfigs(Configs):
-    zoomFactor: ZoomFactor
+    zoomMode: ZoomMode
+    zoomInFactor: ZoomInFactor
+    zoomOutFactor: ZoomOutFactor
 
 class ZoomFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
