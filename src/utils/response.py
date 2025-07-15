@@ -18,8 +18,8 @@ def build_response(context):
 
 
 def build_response_zoom(context):
-    outputImageOne = OutputImageOne(value=context.image)
-    outputImageTwo = OutputImageTwo(value=context.image)
+    outputImageOne = OutputImageOne(value=context.imageOne)
+    outputImageTwo = OutputImageTwo(value=context.imageTwo)
     zoomFatimaExecutorOutputs = ZoomFatimaExecutorOutputs(outputImageOne=outputImageOne, outputImageTwo=outputImageTwo)
     zoomFatimaExecutorResponse = ZoomFatimaExecutorResponse(outputs=zoomFatimaExecutorOutputs)
     zoomFatimaExecutor = ZoomFatimaExecutor(value=zoomFatimaExecutorResponse)
