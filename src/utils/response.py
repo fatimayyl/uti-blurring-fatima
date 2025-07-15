@@ -1,12 +1,13 @@
 
 from sdks.novavision.src.helper.package import PackageHelper
-from components.BlurringFatima.src.models.PackageModel import (PackageModel, PackageConfigs, ConfigExecutor, BlurringFatimaExecutorOutputs, BlurringFatimaExecutorResponse, BlurringFatimaExecutor, OutputImage)
-from components.ZoomFatima.src.models.PackageModel import (PackageModel, PackageConfigs, ConfigExecutor, ZoomFatimaExecutorOutputs, ZoomFatimaExecutorResponse, ZoomFatimaExecutor, OutputImage)
+from components.BlurringFatima.src.models.PackageModel import PackageModel, PackageConfigs, ConfigExecutor, BlurringFatimaExecutorOutputs, BlurringFatimaExecutorResponse, BlurringFatimaExecutor, OutputImageOne, OutputImageTwo
+from components.BlurringFatima.src.models.PackageModel import ZoomFatimaExecutorOutputs, ZoomFatimaExecutorResponse, ZoomFatimaExecutor
 
 
-def build_response_blurring(context):
-    outputImage = OutputImage(value=context.image)
-    blurringFatimaExecutorOutputs = BlurringFatimaExecutorOutputs(outputImage=outputImage)
+
+def build_response(context):
+    outputImageOne = OutputImageOne(value=context.image)
+    blurringFatimaExecutorOutputs = BlurringFatimaExecutorOutputs(outputImageOne=outputImageOne)
     blurringFatimaExecutorResponse = BlurringFatimaExecutorResponse(outputs=blurringFatimaExecutorOutputs)
     blurringFatimaExecutor = BlurringFatimaExecutor(value=blurringFatimaExecutorResponse)
     configexecutor = ConfigExecutor(value=blurringFatimaExecutor)
@@ -17,8 +18,9 @@ def build_response_blurring(context):
 
 
 def build_response_zoom(context):
-    outputImage = OutputImage(value=context.image)
-    zoomFatimaExecutorOutputs = ZoomFatimaExecutorOutputs(outputImage=outputImage)
+    outputImageOne = OutputImageOne(value=context.image)
+    outputImageTwo = OutputImageTwo(value=context.image)
+    zoomFatimaExecutorOutputs = ZoomFatimaExecutorOutputs(outputImageOne=outputImageOne, outputImageTwo=outputImageTwo)
     zoomFatimaExecutorResponse = ZoomFatimaExecutorResponse(outputs=zoomFatimaExecutorOutputs)
     zoomFatimaExecutor = ZoomFatimaExecutor(value=zoomFatimaExecutorResponse)
     configexecutor = ConfigExecutor(value=zoomFatimaExecutor)
