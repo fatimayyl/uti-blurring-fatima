@@ -22,8 +22,9 @@ class ZoomFatimaExecutor(Component):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**(self.request.data))
 
-
-        self.zoom_factor = self.request.get_param("ZoomFactor")
+        self.zoom_mode = self.request.get_param("ZoomMode")
+        self.zoom_in_factor = self.request.get_param("ZoomInFactor")
+        self.zoom_out_factor = self.request.get_param("ZoomOutFactor")
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
 
@@ -31,32 +32,24 @@ class ZoomFatimaExecutor(Component):
     def bootstrap(config: dict) -> dict:
         return {}
 
-    def zoom(self, img, zoom_factor=1.2):
+    def zoom(self, img, zoom_factor):
         """
         Zooms into the center of the image by a zoom factor.
         zoom_factor > 1 → Zoom in
         zoom_factor < 1 → Zoom out
         """
 
-        if zoom_factor == 1.0:
-            return img  # No zoom needed
-
         height, width = img.shape[:2]
 
-        # Yeni alanın boyutları
         new_width = int(width / zoom_factor)
         new_height = int(height / zoom_factor)
 
-        # Merkeze göre crop sınırlarını hesapla
         x1 = (width - new_width) // 2
         y1 = (height - new_height) // 2
         x2 = x1 + new_width
         y2 = y1 + new_height
 
-        # Merkezden kırp
         cropped = img[y1:y2, x1:x2]
-
-        # Orijinal boyutlara döndür
         zoomed = cv2.resize(cropped, (width, height), interpolation=cv2.INTER_LINEAR)
 
         return zoomed
@@ -64,6 +57,11 @@ class ZoomFatimaExecutor(Component):
     def run(self):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
+
+        if self.zoom_mode == "ZoomIn":
+            zoom_factor = self.zoom_in_factor
+        else:
+            zoom_factor = self.zoom_out_factor
 
         img1.value = self.zoom(img1.value, zoom_factor=self.zoom_factor)
         img2.value = self.zoom(img2.value, zoom_factor=self.zoom_factor)
