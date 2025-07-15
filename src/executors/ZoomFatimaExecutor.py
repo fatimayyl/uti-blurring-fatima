@@ -21,7 +21,7 @@ from components.BlurringFatima.src.utils.response import build_response_zoom
 
 class ZoomFatimaExecutor(Component):
     def __init__(self, request, bootstrap):
-        super()._init_(request, bootstrap)
+        super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)
 
 
