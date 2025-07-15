@@ -121,6 +121,7 @@ class ZoomInOption(Config):
     value: Literal["ZoomIn"] = "ZoomIn"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
+    dependentConfig: List["ZoomInFactor"]
     class Config:
         title = "Zoom In"
 
@@ -129,6 +130,7 @@ class ZoomOutOption(Config):
     value: Literal["ZoomOut"] = "ZoomOut"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
+    dependentConfig: List["ZoomOutFactor"]
     class Config:
         title = "Zoom Out"
 
