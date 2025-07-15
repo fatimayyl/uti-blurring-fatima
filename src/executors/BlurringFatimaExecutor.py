@@ -1,5 +1,5 @@
 """
-    It is one of the preprocessing components in which the image is rotated.
+    It is one of the preprocessing components in which the image is blurred.
 """
 
 import os
@@ -21,7 +21,7 @@ class BlurringFatimaExecutor(Component):
         self.request.model = PackageModel(**(self.request.data))
         self.rotation_degree = self.request.get_param("Degree")
         self.keep_side = self.request.get_param("KeepSide")
-        self.image = self.request.get_param("inputImage")
+        self.image = self.request.get_param("inputImageOne")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
