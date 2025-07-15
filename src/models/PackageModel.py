@@ -3,8 +3,8 @@ from typing import List, Optional, Union, Literal,Tuple
 from sdks.novavision.src.base.model import Package, Image, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
 
 
-class InputBlurring(Input):
-    name: Literal["inputBlurring"] = "inputBlurring"
+class InputImageOne(Input):
+    name: Literal["inputImageOne"] = "inputImageOne"
     value: Union[List[Image], Image]
     type: str = "object"
 
@@ -17,10 +17,11 @@ class InputBlurring(Input):
             return "list"
 
     class Config:
-        title = "Blurring"
+        title = "Image"
 
-class InputZoom(Input):
-    name: Literal["InputZoom"] = "InputZoom"
+
+class InputImageTwo(Input):
+    name: Literal["inputImageTwo"] = "inputImageTwo"
     value: Union[List[Image], Image]
     type: str = "object"
 
@@ -33,11 +34,11 @@ class InputZoom(Input):
             return "list"
 
     class Config:
-        title = "Zoom"
+        title = "Image"
 
 
-class OutputBlurring(Output):
-    name: Literal["outputBlurring"] = "outputBlurring"
+class OutputImageOne(Output):
+    name: Literal["outputImageOne"] = "outputImageOne"
     value: Union[List[Image],Image]
     type: str = "object"
 
@@ -50,10 +51,10 @@ class OutputBlurring(Output):
             return "list"
 
     class Config:
-        title = "Blurring"
+        title = "Image"
 
-class OutputZoom(Output):
-    name: Literal["outputZoom"] = "outputZoom"
+class OutputImageTwo(Output):
+    name: Literal["outputImageTwo"] = "outputImageTwo"
     value: Union[List[Image],Image]
     type: str = "object"
 
@@ -66,7 +67,7 @@ class OutputZoom(Output):
             return "list"
 
     class Config:
-        title = "Zoom"
+        title = "Image"
 
 
 class KeepSideFalse(Config):
@@ -116,26 +117,30 @@ class Degree(Config):
         title = "Angleee"
 
 
-class ZoomFatimaExecutorInputs(Inputs):
-    inputImage: InputZoom
+class ZoomFactor(Config):
+    """
+    Zoom factor > 1 for zoom in, < 1 for zoom out.
+    """
+    name: Literal["ZoomFactor"] = "ZoomFactor"
+    value: float = Field(default=1.2, ge=0.1, le=10.0)
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+    placeHolder: Literal["0.1 – 10.0"] = "0.1 – 10.0"
 
-class BlurringFatimaExecutorInputs(Inputs):
-    inputImage: InputBlurring
+    class Config:
+        title = "Zoom Factor"
 
 
-
+class ZoomFatimaExecutorOutputs(Outputs):
+    outputImageOne: OutputImageOne
+    outputImageTwo: OutputImageTwo
 
 class ZoomFatimaExecutorConfigs(Configs):
-    degree: Degree
-    drawBBox: KeepSideBBox
+    zoomFactor: ZoomFactor
 
-class BlurringFatimaExecutorConfigs(Configs):
-    degree: Degree
-    drawBBox: KeepSideBBox
-
-
-
-
+class ZoomFatimaExecutorInputs(Inputs):
+    inputImageOne: InputImageOne
+    inputImageTwo: InputImageTwo
 
 class ZoomFatimaExecutorRequest(Request):
     inputs: Optional[ZoomFatimaExecutorInputs]
@@ -146,36 +151,8 @@ class ZoomFatimaExecutorRequest(Request):
             "target": "configs"
         }
 
-
-class BlurringFatimaExecutorRequest(Request):
-    inputs: Optional[BlurringFatimaExecutorInputs]
-    configs: BlurringFatimaExecutorConfigs
-
-    class Config:
-        json_schema_extra = {
-            "target": "configs"
-        }
-
-
-
-class ZoomFatimaExecutorOutputs(Outputs):
-    outputImage: OutputZoom
-
-
-class BlurringFatimaExecutorOutputs(Outputs):
-    outputImage: OutputBlurring
-
-
-
-
-
 class ZoomFatimaExecutorResponse(Response):
     outputs: ZoomFatimaExecutorOutputs
-
-
-class BlurringFatimaExecutorResponse(Response):
-    outputs: BlurringFatimaExecutorOutputs
-
 
 
 class ZoomFatimaExecutor(Config):
@@ -193,6 +170,31 @@ class ZoomFatimaExecutor(Config):
         }
 
 
+
+
+class BlurringFatimaExecutorConfigs(Configs):
+    degree: Degree
+    drawBBox: KeepSideBBox
+
+class BlurringFatimaExecutorInputs(Inputs):
+    inputImageOne: InputImageOne
+
+class BlurringFatimaExecutorOutputs(Outputs):
+    outputImageOne: OutputImageOne
+
+class BlurringFatimaExecutorRequest(Request):
+    inputs: Optional[BlurringFatimaExecutorInputs]
+    configs: BlurringFatimaExecutorConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
+
+class BlurringFatimaExecutorResponse(Response):
+    outputs: BlurringFatimaExecutorOutputs
+
+
 class BlurringFatimaExecutor(Config):
     name: Literal["BlurringFatimaExecutor"] = "BlurringFatimaExecutor"
     value: Union[BlurringFatimaExecutorRequest, BlurringFatimaExecutorResponse]
@@ -200,7 +202,7 @@ class BlurringFatimaExecutor(Config):
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Package"
+        title = "BlurringFatima"
         json_schema_extra = {
             "target": {
                 "value": 0
@@ -218,7 +220,7 @@ class ConfigExecutor(Config):
     restart: Literal[True] = True
 
     class Config:
-        title = "Type"
+        title = "Task"
 
 
 class PackageConfigs(Configs):
