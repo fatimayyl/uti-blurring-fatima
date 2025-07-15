@@ -289,7 +289,7 @@ class BlurringFatimaExecutor(Config):
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor]
+    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor,GrayFatimaExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
