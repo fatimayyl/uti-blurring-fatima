@@ -9,7 +9,7 @@ import os
 import cv2
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(_file_), '../../../../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
 from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.component import Component
@@ -21,9 +21,10 @@ from components.ZoomFatima.src.utils.response import build_response_zoom
 
 
 class ZoomFatimaExecutor(Component):
-    def _init_(self, request, bootstrap):
+    def __init__(self, request, bootstrap):
         super()._init_(request, bootstrap)
-        self.request.model = PackageModel((self.request.data))
+        self.request.model = PackageModel(**self.request.data)
+
 
         self.zoom_mode = self.request.get_param("ZoomMode")
         self.zoom_in_factor = self.request.get_param("ZoomInFactor")
@@ -44,8 +45,8 @@ class ZoomFatimaExecutor(Component):
 
         height, width = img.shape[:2]
 
-        new_width = int(width / zoom_factor)
-        new_height = int(height / zoom_factor)
+        new_width = max(1, int(width / zoom_factor))
+        new_height = max(1, int(height / zoom_factor))
 
         x1 = (width - new_width) // 2
         y1 = (height - new_height) // 2
@@ -62,9 +63,9 @@ class ZoomFatimaExecutor(Component):
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
         if self.zoom_mode.value == "ZoomIn":
-            zoom_factor = self.zoom_in_factor
+            zoom_factor = self.zoom_in_factor.value
         else:
-            zoom_factor = self.zoom_out_factor
+            zoom_factor = self.zoom_out_factor.value
 
         img1.value = self.zoom(img1.value, zoom_factor=zoom_factor)
         img2.value = self.zoom(img2.value, zoom_factor=zoom_factor)
@@ -76,5 +77,5 @@ class ZoomFatimaExecutor(Component):
         return packageModel
 
 
-if "_main" == __name_:
+if "__main__" == __name__:
     Executor(sys.argv[1]).run()
