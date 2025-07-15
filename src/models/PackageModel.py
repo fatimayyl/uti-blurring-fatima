@@ -116,31 +116,6 @@ class Degree(Config):
     class Config:
         title = "Angleee"
 
-class ZoomInOption(Config):
-    name: Literal["ZoomIn"] = "ZoomIn"
-    value: Literal["ZoomIn"] = "ZoomIn"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-    dependentConfig: List["ZoomInFactor"]
-    class Config:
-        title = "Zoom In"
-
-class ZoomOutOption(Config):
-    name: Literal["ZoomOut"] = "ZoomOut"
-    value: Literal["ZoomOut"] = "ZoomOut"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-    dependentConfig: List["ZoomOutFactor"]
-    class Config:
-        title = "Zoom Out"
-
-class ZoomMode(Config):
-    name: Literal["ZoomMode"] = "ZoomMode"
-    value: Union[ZoomInOption, ZoomOutOption]
-    type: Literal["object"] = "object"
-    field: Literal["dropdownlist"] = "dropdownlist"
-    class Config:
-        title = "Zoom Type"
 
 class ZoomInFactor(Config):
     name: Literal["ZoomInFactor"] = "ZoomInFactor"
@@ -150,6 +125,7 @@ class ZoomInFactor(Config):
     placeHolder: Literal["1.0 – 10.0"] = "1.0 – 10.0"
     class Config:
         title = "Zoom In Factor"
+
 
 class ZoomOutFactor(Config):
     name: Literal["ZoomOutFactor"] = "ZoomOutFactor"
@@ -161,14 +137,43 @@ class ZoomOutFactor(Config):
         title = "Zoom Out Factor"
 
 
+
+class ZoomInOption(Config):
+    name: Literal["ZoomIn"] = "ZoomIn"
+    value: Literal["ZoomIn"] = "ZoomIn"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+    dependentConfig: List[ZoomInFactor] = [ZoomInFactor()]
+    class Config:
+        title = "Zoom In"
+
+
+class ZoomOutOption(Config):
+    name: Literal["ZoomOut"] = "ZoomOut"
+    value: Literal["ZoomOut"] = "ZoomOut"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+    dependentConfig: List[ZoomOutFactor] = [ZoomOutFactor()]
+    class Config:
+        title = "Zoom Out"
+
+
+class ZoomMode(Config):
+    name: Literal["ZoomMode"] = "ZoomMode"
+    value: Union[ZoomInOption, ZoomOutOption]
+    type: Literal["object"] = "object"
+    field: Literal["dropdownlist"] = "dropdownlist"
+    class Config:
+        title = "Zoom Type"
+
+
 class ZoomFatimaExecutorOutputs(Outputs):
     outputImageOne: OutputImageOne
     outputImageTwo: OutputImageTwo
 
 class ZoomFatimaExecutorConfigs(Configs):
     zoomMode: ZoomMode
-    zoomInFactor: ZoomInFactor
-    zoomOutFactor: ZoomOutFactor
+
 
 class ZoomFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
