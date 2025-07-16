@@ -117,15 +117,16 @@ class Degree(Config):
         title = "Angleee"
 
 
+
 class ZoomInFactor(Config):
     name: Literal["ZoomInFactor"] = "ZoomInFactor"
     value: float = Field(default=1.2, ge=1.0, le=10.0)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
     placeHolder: Literal["1.0 – 10.0"] = "1.0 – 10.0"
+
     class Config:
         title = "Zoom In Factor"
-
 
 class ZoomOutFactor(Config):
     name: Literal["ZoomOutFactor"] = "ZoomOutFactor"
@@ -133,10 +134,9 @@ class ZoomOutFactor(Config):
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
     placeHolder: Literal["0.1 – 1.0"] = "0.1 – 1.0"
+
     class Config:
         title = "Zoom Out Factor"
-
-
 
 class ZoomInOption(Config):
     name: Literal["ZoomIn"] = "ZoomIn"
@@ -144,9 +144,9 @@ class ZoomInOption(Config):
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
     dependentConfig: List[ZoomInFactor] = [ZoomInFactor()]
+
     class Config:
         title = "Zoom In"
-
 
 class ZoomOutOption(Config):
     name: Literal["ZoomOut"] = "ZoomOut"
@@ -154,17 +154,23 @@ class ZoomOutOption(Config):
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
     dependentConfig: List[ZoomOutFactor] = [ZoomOutFactor()]
+
     class Config:
         title = "Zoom Out"
-
 
 class ZoomMode(Config):
     name: Literal["ZoomMode"] = "ZoomMode"
     value: Union[ZoomInOption, ZoomOutOption]
     type: Literal["object"] = "object"
     field: Literal["dropdownlist"] = "dropdownlist"
+
     class Config:
         title = "Zoom Type"
+
+
+
+
+
 
 class GrayFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
@@ -205,17 +211,20 @@ class GrayFatimaExecutor(Config):
             }
         }
 
-class ZoomFatimaExecutorOutputs(Outputs):
-    outputImageOne: OutputImageOne
-    outputImageTwo: OutputImageTwo
 
-class ZoomFatimaExecutorConfigs(Configs):
-    zoomMode: ZoomMode
+
+
 
 
 class ZoomFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
     inputImageTwo: InputImageTwo
+
+
+class ZoomFatimaExecutorConfigs(Configs):
+    zoomMode: ZoomMode
+    degree: Degree
+    drawBBox: KeepSideBBox
 
 class ZoomFatimaExecutorRequest(Request):
     inputs: Optional[ZoomFatimaExecutorInputs]
@@ -226,9 +235,12 @@ class ZoomFatimaExecutorRequest(Request):
             "target": "configs"
         }
 
+class ZoomFatimaExecutorOutputs(Outputs):
+    outputImageOne: OutputImageOne
+    outputImageTwo: OutputImageTwo
+
 class ZoomFatimaExecutorResponse(Response):
     outputs: ZoomFatimaExecutorOutputs
-
 
 class ZoomFatimaExecutor(Config):
     name: Literal["ZoomFatimaExecutor"] = "ZoomFatimaExecutor"
@@ -237,13 +249,12 @@ class ZoomFatimaExecutor(Config):
     field: Literal["option"] = "option"
 
     class Config:
-        title = "ZoomFatima"
+        title = "Zoom"
         json_schema_extra = {
             "target": {
                 "value": 0
             }
         }
-
 
 
 
