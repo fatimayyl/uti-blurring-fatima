@@ -24,8 +24,8 @@ class ZoomFatimaExecutor(Component):
         self.request.model = PackageModel(**self.request.data)
 
         self.zoom_mode = self.request.get_param("ZoomMode")
-        self.zoom_in_factor = self.request.get_param("ZoomInFactor", default=1.2)
-        self.zoom_out_factor = self.request.get_param("ZoomOutFactor", default=0.8)
+        self.zoom_in_factor = self.request.get_param("ZoomInFactor")
+        self.zoom_out_factor = self.request.get_param("ZoomOutFactor")
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
 
