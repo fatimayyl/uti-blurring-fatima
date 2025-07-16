@@ -143,11 +143,10 @@ class ZoomInOption(Config):
     value: Literal["ZoomIn"] = "ZoomIn"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
-    example: ZoomInFactor  # ← dependent olarak açılacak alan
+    config: ZoomInFactor = ZoomInFactor()  # Bu dökümana uygun: "ZoomIn" seçilirse bu gösterilir
 
     class Config:
         title = "Zoom In"
-
 
 
 class ZoomOutOption(Config):
@@ -155,11 +154,10 @@ class ZoomOutOption(Config):
     value: Literal["ZoomOut"] = "ZoomOut"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
-    example: ZoomOutFactor
+    config: ZoomOutFactor = ZoomOutFactor()  # "ZoomOut" seçilirse bu gösterilir
 
     class Config:
         title = "Zoom Out"
-
 
 
 class ZoomMode(Config):
@@ -170,6 +168,7 @@ class ZoomMode(Config):
 
     class Config:
         title = "Zoom Type"
+
 
 
 
