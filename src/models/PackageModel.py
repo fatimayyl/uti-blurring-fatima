@@ -143,7 +143,8 @@ class ZoomInOption(Config):
     value: Literal["ZoomIn"] = "ZoomIn"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
-    dependentConfig: List[ZoomInFactor] = [ZoomInFactor()]
+    dependentConfig: List[ZoomInFactor] = Field(default_factory=lambda: [ZoomInFactor()])
+
     class Config:
         title = "Zoom In"
 
@@ -153,7 +154,8 @@ class ZoomOutOption(Config):
     value: Literal["ZoomOut"] = "ZoomOut"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
-    dependentConfig: List[ZoomOutFactor] = [ZoomOutFactor()]
+    dependentConfig: List[ZoomOutFactor] = Field(default_factory=lambda: [ZoomOutFactor()])
+
     class Config:
         title = "Zoom Out"
 
@@ -163,8 +165,10 @@ class ZoomMode(Config):
     value: Union[ZoomInOption, ZoomOutOption]
     type: Literal["object"] = "object"
     field: Literal["dropdownlist"] = "dropdownlist"
+
     class Config:
         title = "Zoom Type"
+
 
 class GrayFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
@@ -211,7 +215,6 @@ class ZoomFatimaExecutorOutputs(Outputs):
 
 class ZoomFatimaExecutorConfigs(Configs):
     zoomMode: ZoomMode
-
 
 class ZoomFatimaExecutorInputs(Inputs):
     inputImageOne: InputImageOne
