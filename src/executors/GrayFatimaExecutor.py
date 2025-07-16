@@ -40,8 +40,8 @@ class GrayFatimaExecutor(Component):
         img2.value = self.gray(img2.value)
         self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
 
-        self.image_one = self.imageOne
-        self.image_two = self.imageTwo
+        self.imageOne = self.imageOne
+        self.imageTwo = self.imageTwo
         return build_response_gray(context=self)
 
 
