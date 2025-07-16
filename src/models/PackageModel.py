@@ -143,10 +143,11 @@ class ZoomInOption(Config):
     value: Literal["ZoomIn"] = "ZoomIn"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
-    dependentConfig: List[ZoomInFactor] = Field(default_factory=lambda: [ZoomInFactor()])
+    example: ZoomInFactor  # ← dependent olarak açılacak alan
 
     class Config:
         title = "Zoom In"
+
 
 
 class ZoomOutOption(Config):
@@ -154,10 +155,11 @@ class ZoomOutOption(Config):
     value: Literal["ZoomOut"] = "ZoomOut"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
-    dependentConfig: List[ZoomOutFactor] = Field(default_factory=lambda: [ZoomOutFactor()])
+    example: ZoomOutFactor
 
     class Config:
         title = "Zoom Out"
+
 
 
 class ZoomMode(Config):
@@ -168,6 +170,7 @@ class ZoomMode(Config):
 
     class Config:
         title = "Zoom Type"
+
 
 
 class GrayFatimaExecutorInputs(Inputs):
@@ -329,7 +332,7 @@ class BlurringFatimaExecutor(Config):
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor,GrayFatimaExecutor,CropFatimaExecutor,BlurringFatimaExecutor]
+    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor,GrayFatimaExecutor,CropFatimaExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
