@@ -192,7 +192,7 @@ class GrayFatimaExecutorResponse(Response):
     outputs: GrayFatimaExecutorOutputs
 
 class GrayFatimaExecutor(Config):
-    name: Literal["CAmine"] = "CAmine"
+    name: Literal["GrayFatimaExecutor"] = "GrayFatimaExecutor"
     value: Union[GrayFatimaExecutorRequest, GrayFatimaExecutorResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
