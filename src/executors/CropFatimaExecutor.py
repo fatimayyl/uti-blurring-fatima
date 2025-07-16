@@ -28,18 +28,32 @@ class CropFatimaExecutor(Component):
     def bootstrap(config: dict) -> dict:
         return {}
 
-    def crop(self, img):
-        if isinstance(self.crop_type, str) and self.crop_type.lower() == "cropboxsize":
-            return img[50:50 + self.crop_box_size, 50:50 + self.crop_box_size]
-        elif isinstance(self.crop_type, str) and self.crop_type.lower() == "cropratio":
-            h, w = img.shape[:2]
-            new_h = int(h * self.crop_ratio)
-            new_w = int(w * self.crop_ratio)
-            start_y = (h - new_h) // 2
-            start_x = (w - new_w) // 2
-            return img[start_y:start_y + new_h, start_x:start_x + new_w]
-        else:
-            return img  # Geçersiz durumda orijinal döndür
+    import cv2
+
+    def crop_center(img, crop_width, crop_height):
+        """
+        Verilen görüntüyü merkezden crop_width x crop_height boyutlarında kırpar.
+
+        Args:
+            img: Giriş görüntüsü (numpy array).
+            crop_width: Kırpılacak genişlik (px).
+            crop_height: Kırpılacak yükseklik (px).
+
+        Returns:
+            Kırpılmış görüntü.
+        """
+        height, width = img.shape[:2]
+
+        # Kırpılacak alanın başlangıç koordinatlarını hesapla
+        x1 = max(0, (width - crop_width) // 2)
+        y1 = max(0, (height - crop_height) // 2)
+        x2 = x1 + crop_width
+        y2 = y1 + crop_height
+
+        # Görüntüyü kırp
+        cropped = img[y1:y2, x1:x2]
+
+        return cropped
 
     def run(self):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
