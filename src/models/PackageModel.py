@@ -247,7 +247,44 @@ class ZoomFatimaExecutor(Config):
             }
         }
 
+class CropFatimaExecutorInputs(Inputs):
+    inputImageOne: InputImageOne
+    inputImageTwo: InputImageTwo
 
+
+class CropFatimaExecutorConfigs(Configs):
+    degree: Degree
+    drawBBox: KeepSideBBox
+
+class CropFatimaExecutorRequest(Request):
+    inputs: Optional[CropFatimaExecutorInputs]
+    configs: CropFatimaExecutorConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
+
+class CropFatimaExecutorOutputs(Outputs):
+    outputImageOne: OutputImageOne
+    outputImageTwo: OutputImageTwo
+
+class CropFatimaExecutorResponse(Response):
+    outputs: CropFatimaExecutorOutputs
+
+class CropFatimaExecutor(Config):
+    name: Literal["CropFatimaExecutor"] = "CropFatimaExecutor"
+    value: Union[CropFatimaExecutorRequest, CropFatimaExecutorResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Crop"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
 
 
 class BlurringFatimaExecutorConfigs(Configs):
@@ -292,7 +329,7 @@ class BlurringFatimaExecutor(Config):
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor,GrayFatimaExecutor]
+    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor,GrayFatimaExecutor,CropFatimaExecutor,BlurringFatimaExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
