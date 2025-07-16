@@ -48,7 +48,7 @@ class ZoomFatimaExecutor(Component):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        if self.zoom_mode.value == "ZoomIn":
+        if self.zoom_mode == "ZoomIn":
             zoom_factor = self.zoom_in_factor.value if hasattr(self.zoom_in_factor, "value") else 1.2
         else:
             zoom_factor = self.zoom_out_factor.value if hasattr(self.zoom_out_factor, "value") else 0.8
