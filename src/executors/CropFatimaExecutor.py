@@ -28,9 +28,9 @@ class CropFatimaExecutor(Component):
     def bootstrap(config: dict) -> dict:
         return {}
 
-    import cv2
+    
 
-    def crop_center(img, crop_width, crop_height):
+    def crop(img, crop_width, crop_height):
         """
         Verilen görüntüyü merkezden crop_width x crop_height boyutlarında kırpar.
 
