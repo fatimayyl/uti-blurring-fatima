@@ -34,19 +34,34 @@ class CropFatimaExecutor(Component):
 
     def crop(self, img, crop_mode, top_px, bottom_px):
         height, width = img.shape[:2]
-        if crop_mode == "CropTop" and top_px is not None:
+        if crop_mode == "CropTop" and top_px:
+            print(f"Cropping TOP: {top_px}px")
             return img[int(top_px):, :]
-        elif crop_mode == "CropBottom" and bottom_px is not None:
+        elif crop_mode == "CropBottom" and bottom_px:
+            print(f"Cropping BOTTOM: {bottom_px}px")
             return img[:height - int(bottom_px), :]
-        return img  # hiçbir kırpma yapılmaz
+        print("NO CROP applied")
+        return img
 
     def run(self):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        # .value kontrolü (Zoom yapısına uygun şekilde)
-        top_px = self.crop_top_pixels.value if hasattr(self.crop_top_pixels, "value") else None
-        bottom_px = self.crop_bottom_pixels.value if hasattr(self.crop_bottom_pixels, "value") else None
+        top_px = (
+            self.crop_top_pixels.value
+            if self.crop_mode == "CropTop" and hasattr(self.crop_top_pixels, "value")
+            else None
+        )
+
+        bottom_px = (
+            self.crop_bottom_pixels.value
+            if self.crop_mode == "CropBottom" and hasattr(self.crop_bottom_pixels, "value")
+            else None
+        )
+
+        print("MODE:", self.crop_mode)
+        print("TOP:", top_px)
+        print("BOTTOM:", bottom_px)
 
         img1.value = self.crop(img1.value, self.crop_mode, top_px, bottom_px)
         img2.value = self.crop(img2.value, self.crop_mode, top_px, bottom_px)
@@ -54,8 +69,12 @@ class CropFatimaExecutor(Component):
         self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
         self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
 
-
-        return build_response_crop(context=self)
+        return {
+            "outputs": {
+                "outputImageOne": self.imageOne,
+                "outputImageTwo": self.imageTwo
+            }
+        }
 
 
 if __name__ == "__main__":
