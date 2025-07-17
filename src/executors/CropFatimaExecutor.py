@@ -44,21 +44,33 @@ class CropFatimaExecutor(Component):
             return img
 
     def run(self):
+        print("crop_mode:", self.crop_mode)
+        print("crop_pixels (raw):", self.crop_pixels)
+        print("imageOne param:", self.imageOne)
+        print("imageTwo param:", self.imageTwo)
+
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        crop_pixels = (
-            self.crop_pixels.value
-            if hasattr(self.crop_pixels, "value")
-            else 50  # default value
-        )
+        # crop_pixels güvenli dönüşümü
+        if hasattr(self.crop_pixels, "value"):
+            try:
+                crop_pixels = int(self.crop_pixels.value)
+            except Exception as e:
+                print("Error converting crop_pixels.value to int:", e)
+                crop_pixels = 50
+        else:
+            try:
+                crop_pixels = int(self.crop_pixels)
+            except Exception as e:
+                print("Error converting crop_pixels to int:", e)
+                crop_pixels = 50
 
         cropped1 = self.crop(img1.value, self.crop_mode, crop_pixels)
         cropped2 = self.crop(img2.value, self.crop_mode, crop_pixels)
 
         print("Cropped1 shape:", cropped1.shape)
         print("Cropped2 shape:", cropped2.shape)
-
 
         img1_cropped = Image()
         img1_cropped.value = cropped1
@@ -69,9 +81,12 @@ class CropFatimaExecutor(Component):
         self.imageOne = Image.set_frame(
             img=img1_cropped, package_uID=self.uID, redis_db=self.redis_db
         )
+        print("Set frame imageOne:", self.imageOne)
+
         self.imageTwo = Image.set_frame(
             img=img2_cropped, package_uID=self.uID, redis_db=self.redis_db
         )
+        print("Set frame imageTwo:", self.imageTwo)
 
         print("imageOne is None?", self.imageOne is None)
         print("imageTwo is None?", self.imageTwo is None)
