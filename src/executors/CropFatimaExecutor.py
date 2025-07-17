@@ -59,11 +59,13 @@ class CropFatimaExecutor(Component):
         print("Cropped1 shape:", cropped1.shape)
         print("Cropped2 shape:", cropped2.shape)
 
-        # Image nesnesine sar
-        img1_cropped = Image(value=cropped1)
-        img2_cropped = Image(value=cropped2)
 
-        # Redis'e kaydet
+        img1_cropped = Image()
+        img1_cropped.value = cropped1
+
+        img2_cropped = Image()
+        img2_cropped.value = cropped2
+
         self.imageOne = Image.set_frame(
             img=img1_cropped, package_uID=self.uID, redis_db=self.redis_db
         )
