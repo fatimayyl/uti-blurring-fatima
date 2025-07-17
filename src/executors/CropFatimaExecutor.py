@@ -1,8 +1,3 @@
-"""
-    CropFatimaExecutor:
-    Seçilen moda göre (CropTop veya CropBottom), görüntünün üstünden ya da altından kırpma işlemi yapar.
-"""
-
 import os
 import cv2
 import sys
@@ -22,8 +17,7 @@ class CropFatimaExecutor(Component):
         self.request.model = PackageModel(**self.request.data)
 
         self.crop_mode = self.request.get_param("CropMode")
-        self.crop_top_pixels = self.request.get_param("CropTopPixels")
-        self.crop_bottom_pixels = self.request.get_param("CropBottomPixels")
+        self.crop_pixels = self.request.get_param("CropPixels")
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
 
@@ -32,38 +26,54 @@ class CropFatimaExecutor(Component):
         return {}
 
     def crop(self, img, mode, pixels):
-        height, width = img.shape[:2]
         print(f"Cropping mode: {mode}, pixels: {pixels}, image size: {img.shape}")
+
+        h, w = img.shape[:2]
+        p = int(pixels)
+
         if mode == "CropTop":
-            return img[pixels:, :]
+            return img[p:, :]
         elif mode == "CropBottom":
-            return img[:height - pixels, :]
+            return img[:h - p, :]
+        elif mode == "CropLeft":
+            return img[:, p:]
+        elif mode == "CropRight":
+            return img[:, :w - p]
         else:
-            return img  # mode hatalıysa işlem yapma
+            print("Unknown crop mode, returning original image.")
+            return img
 
     def run(self):
-        # Resimleri al
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        # Crop moduna göre kaç pixel kırpılacağını belirle
-        if self.crop_mode == "CropTop":
-            crop_pixels = self.crop_top_pixels.value if hasattr(self.crop_top_pixels, "value") else 50
-        elif self.crop_mode == "CropBottom":
-            crop_pixels = self.crop_bottom_pixels.value if hasattr(self.crop_bottom_pixels, "value") else 50
-        else:
-            print(f"[WARN] Geçersiz crop_mode: {self.crop_mode}")
-            crop_pixels = 0
-
-        crop_pixels = max(1, min(1000, int(crop_pixels)))
+        crop_pixels = (
+            self.crop_pixels.value
+            if hasattr(self.crop_pixels, "value")
+            else 50  # default value
+        )
 
         cropped1 = self.crop(img1.value, self.crop_mode, crop_pixels)
         cropped2 = self.crop(img2.value, self.crop_mode, crop_pixels)
 
-        self.imageOne = Image.set_frame(img=cropped1, package_uID=self.uID, redis_db=self.redis_db)
-        self.imageTwo = Image.set_frame(img=cropped2, package_uID=self.uID, redis_db=self.redis_db)
+        print("Cropped1 shape:", cropped1.shape)
+        print("Cropped2 shape:", cropped2.shape)
 
-        # Response dön
+        # Image nesnesine sar
+        img1_cropped = Image(value=cropped1)
+        img2_cropped = Image(value=cropped2)
+
+        # Redis'e kaydet
+        self.imageOne = Image.set_frame(
+            img=img1_cropped, package_uID=self.uID, redis_db=self.redis_db
+        )
+        self.imageTwo = Image.set_frame(
+            img=img2_cropped, package_uID=self.uID, redis_db=self.redis_db
+        )
+
+        print("imageOne is None?", self.imageOne is None)
+        print("imageTwo is None?", self.imageTwo is None)
+
         return build_response_crop(context=self)
 
 
