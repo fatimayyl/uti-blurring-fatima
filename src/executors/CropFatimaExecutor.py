@@ -20,9 +20,10 @@ class CropFatimaExecutor(Component):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)
 
-        # Config üzerinden crop tipi ve piksel değeri alınıyor
-        self.crop_type = self.request.model.configs.cropMode.value
-        self.crop_pixels = self.request.model.configs.cropMode.config.value
+        # Config parametrelerini doğrudan al
+        self.crop_mode = self.request.get_param("CropMode")  # CropTop veya CropBottom
+        self.crop_top_pixels = self.request.get_param("CropTopPixels")  # Sadece varsa
+        self.crop_bottom_pixels = self.request.get_param("CropBottomPixels")  # Sadece varsa
 
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
