@@ -1,15 +1,18 @@
+"""
+    It is one of the preprocessing components in which the image is cropped from top or bottom.
+"""
+
 import os
-import sys
 import cv2
-import numpy as np
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
 from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.component import Component
 from sdks.novavision.src.helper.executor import Executor
-from components.BlurringFatima.src.models.PackageModel import PackageModel, CropTopOption, CropBottomOption
 from components.BlurringFatima.src.utils.response import build_response_crop
+from components.BlurringFatima.src.models.PackageModel import PackageModel
 
 
 class CropFatimaExecutor(Component):
@@ -17,49 +20,47 @@ class CropFatimaExecutor(Component):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)
 
+        # Config parametreleri alınıyor
+        self.crop_mode = self.request.get_param("CropMode")  # "CropTop" veya "CropBottom"
+        self.crop_top_pixels = self._get_param_value("CropTopPixels")
+        self.crop_bottom_pixels = self._get_param_value("CropBottomPixels")
+
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
-        self.crop_mode = self.request.get_config("CropMode")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
         return {}
 
-    def crop_image(self, img, mode):
-        h, w = img.shape[:2]
+    def _get_param_value(self, param_name):
+        val = self.request.get_param(param_name)
+        if hasattr(val, "value"):
+            return int(val.value)
+        try:
+            return int(val)
+        except:
+            return None
 
-        if isinstance(mode, CropTopOption):
-            pixels = mode.config.value
-            return img[pixels:, :]
-        elif isinstance(mode, CropBottomOption):
-            pixels = mode.config.value
-            return img[:h - pixels, :]
-        else:
-            print("Unknown crop mode. Returning original image.")
-            return img
+    def crop(self, img, crop_mode, top_px, bottom_px):
+        height, width = img.shape[:2]
+        if crop_mode == "CropTop" and top_px:
+            return img[top_px:, :]
+        elif crop_mode == "CropBottom" and bottom_px:
+            return img[:height - bottom_px, :]
+        return img
 
     def run(self):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        cropped1 = self.crop_image(img1.value, self.crop_mode.value)
-        cropped2 = self.crop_image(img2.value, self.crop_mode.value)
+        cropped1 = self.crop(img1.value, self.crop_mode, self.crop_top_pixels, self.crop_bottom_pixels)
+        cropped2 = self.crop(img2.value, self.crop_mode, self.crop_top_pixels, self.crop_bottom_pixels)
 
-        print("Cropped1 shape:", cropped1.shape)
-        print("Cropped2 shape:", cropped2.shape)
+        img1.value = cropped1
+        img2.value = cropped2
 
-        img1_cropped = Image()
-        img1_cropped.value = cropped1
-
-        img2_cropped = Image()
-        img2_cropped.value = cropped2
-
-        self.imageOne = Image.set_frame(
-            img=img1_cropped, package_uID=self.uID, redis_db=self.redis_db
-        )
-        self.imageTwo = Image.set_frame(
-            img=img2_cropped, package_uID=self.uID, redis_db=self.redis_db
-        )
+        self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
+        self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
 
         return build_response_crop(context=self)
 
