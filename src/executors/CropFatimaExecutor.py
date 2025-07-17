@@ -20,10 +20,14 @@ class CropFatimaExecutor(Component):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)
 
-        # Config parametreleri doğrudan alınır (Zoom ile uyumlu)
-        self.crop_mode = self.request.get_param("CropMode")  # "CropTop" veya "CropBottom"
-        self.crop_top_pixels = self.request.get_param("CropTopPixels")
-        self.crop_bottom_pixels = self.request.get_param("CropBottomPixels")
+        crop_mode_obj = self.request.get_param("CropMode")
+        self.crop_mode = crop_mode_obj.get("value") if isinstance(crop_mode_obj, dict) else crop_mode_obj
+
+        self.crop_top_pixels = crop_mode_obj.get("config", {}).get("CropTopPixels", {}).get("value") \
+            if self.crop_mode == "CropTop" else None
+
+        self.crop_bottom_pixels = crop_mode_obj.get("config", {}).get("CropBottomPixels", {}).get("value") \
+            if self.crop_mode == "CropBottom" else None
 
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
