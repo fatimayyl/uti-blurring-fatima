@@ -20,10 +20,10 @@ class CropFatimaExecutor(Component):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)
 
-        # Config parametrelerini doğrudan al
-        self.crop_mode = self.request.get_param("CropMode")  # CropTop veya CropBottom
-        self.crop_top_pixels = self.request.get_param("CropTopPixels")  # Sadece varsa
-        self.crop_bottom_pixels = self.request.get_param("CropBottomPixels")  # Sadece varsa
+        # Config parametreleri doğrudan alınır (Zoom ile uyumlu)
+        self.crop_mode = self.request.get_param("CropMode")  # "CropTop" veya "CropBottom"
+        self.crop_top_pixels = self.request.get_param("CropTopPixels")
+        self.crop_bottom_pixels = self.request.get_param("CropBottomPixels")
 
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
@@ -32,22 +32,22 @@ class CropFatimaExecutor(Component):
     def bootstrap(config: dict) -> dict:
         return {}
 
-    @staticmethod
-    def crop(img, crop_type, crop_pixels):
+    def crop(self, img, crop_mode, top_px, bottom_px):
         height, width = img.shape[:2]
-        if crop_type == "CropTop":
-            return img[crop_pixels:, :]
-        elif crop_type == "CropBottom":
-            return img[:height - crop_pixels, :]
-        return img  # default: no crop
+        if crop_mode == "CropTop" and top_px is not None:
+            return img[int(top_px):, :]
+        elif crop_mode == "CropBottom" and bottom_px is not None:
+            return img[:height - int(bottom_px), :]
+        return img  # hiçbir kırpma yapılmaz
 
     def run(self):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
-        img1.value = self.crop(img1.value, self.crop_type, self.crop_pixels)
-        self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
-
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
-        img2.value = self.crop(img2.value, self.crop_type, self.crop_pixels)
+
+        img1.value = self.crop(img1.value, self.crop_mode, self.crop_top_pixels, self.crop_bottom_pixels)
+        img2.value = self.crop(img2.value, self.crop_mode, self.crop_top_pixels, self.crop_bottom_pixels)
+
+        self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
         self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
 
         return build_response_crop(context=self)
