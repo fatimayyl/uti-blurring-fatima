@@ -57,13 +57,11 @@ class CropFatimaExecutor(Component):
 
         crop_pixels = max(1, min(1000, int(crop_pixels)))
 
-        # Görüntülere kırpma uygula
-        img1.value = self.crop(img1.value, self.crop_mode, crop_pixels)
-        img2.value = self.crop(img2.value, self.crop_mode, crop_pixels)
+        cropped1 = self.crop(img1.value, self.crop_mode, crop_pixels)
+        cropped2 = self.crop(img2.value, self.crop_mode, crop_pixels)
 
-        # Çıktıyı Redis'e kaydet
-        self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
-        self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
+        self.imageOne = Image.set_frame(img=cropped1, package_uID=self.uID, redis_db=self.redis_db)
+        self.imageTwo = Image.set_frame(img=cropped2, package_uID=self.uID, redis_db=self.redis_db)
 
         # Response dön
         return build_response_crop(context=self)
