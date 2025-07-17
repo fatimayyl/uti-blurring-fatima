@@ -43,9 +43,10 @@ class CropFatimaExecutor(Component):
 
     def crop(self, img, crop_mode, top_px, bottom_px):
         height, width = img.shape[:2]
-        if crop_mode == "CropTop" and top_px:
+        print(f"Crop mode: {crop_mode}, top_px: {top_px}, bottom_px: {bottom_px}")
+        if crop_mode == "CropTop" and top_px is not None:
             return img[top_px:, :]
-        elif crop_mode == "CropBottom" and bottom_px:
+        elif crop_mode == "CropBottom" and bottom_px is not None:
             return img[:height - bottom_px, :]
         return img
 
