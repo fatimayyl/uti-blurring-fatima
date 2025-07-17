@@ -24,9 +24,13 @@ class GrayFatimaExecutor(Component):
         self.imageOne = self.request.get_param("inputImageOne")
         self.imageTwo = self.request.get_param("inputImageTwo")
 
+        self.bootstrap["sayac"]+=1
+        print(self.bootstrap["sayac"])
+
     @staticmethod
     def bootstrap(config: dict) -> dict:
-        return {}
+        sayac = 0
+        return {"sayac":sayac}
 
     def gray(self,img):
         return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
