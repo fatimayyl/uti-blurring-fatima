@@ -117,6 +117,61 @@ class Degree(Config):
         title = "Angleee"
 
 
+
+class CropTopPixels(Config):
+    name: Literal["CropTopPixels"] = "CropTopPixels"
+    value: int = Field(default=50, ge=1, le=1000)
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+    placeHolder: Literal["1 – 1000"] = "1 – 1000"
+
+    class Config:
+        title = "Top Crop Pixels"
+
+
+class CropBottomPixels(Config):
+    name: Literal["CropBottomPixels"] = "CropBottomPixels"
+    value: int = Field(default=50, ge=1, le=1000)
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+    placeHolder: Literal["1 – 1000"] = "1 – 1000"
+
+    class Config:
+        title = "Bottom Crop Pixels"
+
+
+class CropTopOption(Config):
+    name: Literal["CropTop"] = "CropTop"
+    value: Literal["CropTop"] = "CropTop"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+    config: CropTopPixels = CropTopPixels()
+
+    class Config:
+        title = "Top Crop"
+
+
+class CropBottomOption(Config):
+    name: Literal["CropBottom"] = "CropBottom"
+    value: Literal["CropBottom"] = "CropBottom"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+    config: CropBottomPixels = CropBottomPixels()
+
+    class Config:
+        title = "Bottom Crop"
+
+
+class CropMode(Config):
+    name: Literal["CropMode"] = "CropMode"
+    value: Union[CropTopOption, CropBottomOption]
+    type: Literal["object"] = "object"
+    field: Literal["dropdownlist"] = "dropdownlist"
+
+    class Config:
+        title = "Crop Type"
+
+
 class ZoomInFactor(Config):
     name: Literal["ZoomInFactor"] = "ZoomInFactor"
     value: float = Field(default=1.2, ge=1.0, le=10.0)
@@ -255,8 +310,7 @@ class CropFatimaExecutorInputs(Inputs):
 
 
 class CropFatimaExecutorConfigs(Configs):
-    degree: Degree
-    drawBBox: KeepSideBBox
+    cropMode: CropMode
 
 class CropFatimaExecutorRequest(Request):
     inputs: Optional[CropFatimaExecutorInputs]
