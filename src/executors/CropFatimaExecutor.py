@@ -44,11 +44,16 @@ class CropFatimaExecutor(Component):
         img1 = Image.get_frame(img=self.imageOne, redis_db=self.redis_db)
         img2 = Image.get_frame(img=self.imageTwo, redis_db=self.redis_db)
 
-        img1.value = self.crop(img1.value, self.crop_mode, self.crop_top_pixels, self.crop_bottom_pixels)
-        img2.value = self.crop(img2.value, self.crop_mode, self.crop_top_pixels, self.crop_bottom_pixels)
+        # .value kontrolü (Zoom yapısına uygun şekilde)
+        top_px = self.crop_top_pixels.value if hasattr(self.crop_top_pixels, "value") else None
+        bottom_px = self.crop_bottom_pixels.value if hasattr(self.crop_bottom_pixels, "value") else None
+
+        img1.value = self.crop(img1.value, self.crop_mode, top_px, bottom_px)
+        img2.value = self.crop(img2.value, self.crop_mode, top_px, bottom_px)
 
         self.imageOne = Image.set_frame(img=img1, package_uID=self.uID, redis_db=self.redis_db)
         self.imageTwo = Image.set_frame(img=img2, package_uID=self.uID, redis_db=self.redis_db)
+
 
         return build_response_crop(context=self)
 
