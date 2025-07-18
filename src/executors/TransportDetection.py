@@ -3,14 +3,13 @@ import sys
 import torch
 from ultralytics import YOLO
 
-# PYTHONPATH ayarları
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
 from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.capsule import Capsule
 from sdks.novavision.src.helper.executor import Executor
 
-from components.BlurringFatima.src.utils.utils import load_models
+# from components.BlurringFatima.src.utils.utils import load_models
 from components.BlurringFatima.src.utils.response import build_response_transport
 from components.BlurringFatima.src.models.PackageModel import PackageModel
 
@@ -20,21 +19,21 @@ class TransportDetection(Capsule):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**(self.request.data))
 
-        # Giriş parametreleri
         self.image = self.request.get_param("inputImage")
 
+        # self.weight = self.bootstrap["model"]
 
-        self.weight = self.bootstrap["model"]
-
+    """
     @staticmethod
     def bootstrap(config: dict) -> dict:
-        """
-        YOLO modelini ve device'ı yükleyen fonksiyon.
-        """
         model = load_models(config=config)  # utils.py içindeki load_models çağrısı
         return {"model": model}
 
+    """
 
+    @staticmethod
+    def bootstrap(config: dict) -> dict:
+        return {}
 
     def run(self):
         """
