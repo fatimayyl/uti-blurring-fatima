@@ -8,12 +8,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
 from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.capsule import Capsule
-from sdks.novavision.src.base.model import BoundingBox
 from sdks.novavision.src.helper.executor import Executor
 
 from components.BlurringFatima.src.utils.utils import load_models
-from components.BlurringFatima.src.utils.response import build_response
-from components.BlurringFatima.src.models.PackageModel import PackageModel, Detection
+from components.BlurringFatima.src.utils.response import build_response_transport
+from components.BlurringFatima.src.models.PackageModel import PackageModel
 
 
 class TransportDetection(Capsule):
@@ -23,23 +22,9 @@ class TransportDetection(Capsule):
 
         # Giriş parametreleri
         self.image = self.request.get_param("inputImage")
-        self.device = self.request.get_param("ConfigDevice")
 
-        conf_thres_raw = self.request.get_param("ConfidentThreshold")
-        if conf_thres_raw is None:
-            self.conf_thres = 0.25  # varsayılan confidence threshold
-        else:
-            self.conf_thres = float(conf_thres_raw)
 
-        iou_thres_raw = self.request.get_param("IOUThreshold")
-        if iou_thres_raw is None:
-            self.iou_thres = 0.45  # varsayılan iou threshold
-        else:
-            self.iou_thres = float(iou_thres_raw)
-
-        # Model ve cihaz
-        self.weight = self.bootstrap.get("model")  # YOLO model objesi
-        self.select_device = self.bootstrap.get("device")
+        self.weight = self.bootstrap["model"]
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
@@ -47,52 +32,17 @@ class TransportDetection(Capsule):
         YOLO modelini ve device'ı yükleyen fonksiyon.
         """
         model = load_models(config=config)  # utils.py içindeki load_models çağrısı
-        return model
+        return {"model": model}
 
-    def output_result(self, results, img_uid):
-        """
-        YOLO çıktısını Detection listesine dönüştürür.
-        """
-        detection_list = []
-        for r in results:
-            for box in r.boxes:
-                bbox = BoundingBox(
-                    left=float(box.xyxy[0][0]),
-                    top=float(box.xyxy[0][1]),
-                    width=float(box.xyxy[0][2] - box.xyxy[0][0]),
-                    height=float(box.xyxy[0][3] - box.xyxy[0][1])
-                )
-                newdetect = Detection(
-                    boundingBox=bbox,
-                    confidence=float(box.conf[0]),
-                    classLabel=self.weight.names[int(box.cls[0])],
-                    classId=int(box.cls[0]),
-                    imgUID=img_uid
-                )
-                detection_list.append(newdetect)
-        return detection_list
 
-    def transport_inference(self):
-        """
-        YOLO modelinde tahmin çalıştırır.
-        """
-        results = self.weight.predict(
-            self.image.value,
-            conf=self.conf_thres,
-            iou=self.iou_thres,
-            device=self.select_device,
-            verbose=False
-        )
-        output_detection_list = self.output_result(results, self.image.uID)
-        return output_detection_list
 
     def run(self):
         """
         Executor'un ana çalıştırma fonksiyonu.
         """
-        self.image = Image.get_frame(img=self.image, redis_db=self.redis_db)
-        self.detection = self.transport_inference()
-        packageModel = build_response(context=self)
+        img = Image.get_frame(img=self.image, redis_db=self.redis_db)
+        self.image = Image.set_frame(img=img, package_uID=self.uID, redis_db=self.redis_db)
+        packageModel = build_response_transport(context=self)
         return packageModel
 
 
