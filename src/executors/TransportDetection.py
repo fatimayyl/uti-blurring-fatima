@@ -8,10 +8,10 @@ from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.capsule import Capsule
 from sdks.novavision.src.base.model import BoundingBox
 from sdks.novavision.src.helper.executor import Executor
-from capsules.Yolov5.src.classes.yolov5_detect import Yolov5Detect
-from capsules.BlurringFatima.src.utils.utils import load_models
-from capsules.BlurringFatima.src.utils.response import build_response
-from capsules.BlurringFatima.src.models.PackageModel import PackageModel, Detection
+from components.Yolov5.src.classes.yolov5_detect import Yolov5Detect
+from components.BlurringFatima.src.utils.utils import load_models
+from components.BlurringFatima.src.utils.response import build_response
+from components.BlurringFatima.src.models.PackageModel import PackageModel, Detection
 
 
 class TransportDetection(Capsule):
