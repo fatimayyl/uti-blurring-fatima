@@ -388,14 +388,9 @@ class TransportExecutorOutputs(Outputs):
     outputImageOne: OutputImageOne
 
 
-class TransportExecutorConfigs(Configs):
-    confidentThreshold: float = Field(default=0.3, ge=0, le=1, description="Confidence threshold")
-    iouThreshold: float = Field(default=0.3, ge=0, le=1, description="IOU threshold")
-
 
 class TransportExecutorRequest(Request):
     inputs: Optional[TransportExecutorInputs]
-    configs: TransportExecutorConfigs
 
     class Config:
         json_schema_extra = {

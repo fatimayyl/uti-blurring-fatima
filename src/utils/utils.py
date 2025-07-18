@@ -8,7 +8,7 @@ logger = LoggerManager()
 application = Application()
 
 # Model yolunu sabit tanımlıyoruz
-MODEL_PATH = "/storage/yolo11m.pt"
+MODEL_PATH = "\storage\yolo11m.pt"
 
 def load_models(config: dict):
 
