@@ -380,12 +380,51 @@ class BlurringFatimaExecutor(Config):
             }
         }
 
+class TransportExecutorInputs(Inputs):
+    inputImageOne: InputImageOne
 
+
+class TransportExecutorOutputs(Outputs):
+    outputImageOne: OutputImageOne
+
+
+class TransportExecutorConfigs(Configs):
+    confidentThreshold: float = Field(default=0.3, ge=0, le=1, description="Confidence threshold")
+    iouThreshold: float = Field(default=0.3, ge=0, le=1, description="IOU threshold")
+
+
+class TransportExecutorRequest(Request):
+    inputs: Optional[TransportExecutorInputs]
+    configs: TransportExecutorConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
+
+
+class TransportExecutorResponse(Response):
+    outputs: TransportExecutorOutputs
+
+
+class TransportExecutor(Config):
+    name: Literal["TransportDetection"] = "TransportDetection"
+    value: Union[TransportExecutorRequest, TransportExecutorResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Transport Detection"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
 
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[BlurringFatimaExecutor,ZoomFatimaExecutor,GrayFatimaExecutor,CropFatimaExecutor]
+    value: Union[BlurringFatimaExecutor,TransportExecutor,ZoomFatimaExecutor,GrayFatimaExecutor,CropFatimaExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
