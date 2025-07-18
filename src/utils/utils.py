@@ -11,22 +11,20 @@ application = Application()
 MODEL_PATH = "/storage/yolo11m.pt"
 
 def load_models(config: dict):
-    """
-    YOLO modelini yükler ve config parametrelerine göre hazırlar.
-    """
     models = {}
 
-    # MODEL_PATH kontrolü
-    if not os.path.exists(MODEL_PATH):
-        raise FileNotFoundError(f"Model dosyası bulunamadı: {MODEL_PATH}")
+    weight_name = config.get("Weights", "yolo11m.pt")
+    weight_path = f"/storage/{weight_name}"
 
-    # Cihaz seçimi (GPU varsa onu kullan)
-    config_device = application.get_param(config=config, name="ConfigDevice", default="CPU")
+    if not os.path.exists(weight_path):
+        raise FileNotFoundError(f"Model dosyası bulunamadı: {weight_path}")
+
+    config_device = config.get("ConfigDevice", "CPU")
     device = 'cuda' if (config_device == "GPU" and torch.cuda.is_available()) else 'cpu'
+
     logger.info(f"YOLO modeli {device.upper()} üzerinde çalışacak.")
 
-    # YOLO modelini yükle
-    model = YOLO(MODEL_PATH)
+    model = YOLO(weight_path)
     model.to(device)
 
     models["model"] = model
