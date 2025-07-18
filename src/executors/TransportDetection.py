@@ -24,8 +24,18 @@ class TransportDetection(Capsule):
         # Giriş parametreleri
         self.image = self.request.get_param("inputImage")
         self.device = self.request.get_param("ConfigDevice")
-        self.conf_thres = float(self.request.get_param("ConfidentThreshold"))
-        self.iou_thres = float(self.request.get_param("IOUThreshold"))
+
+        conf_thres_raw = self.request.get_param("ConfidentThreshold")
+        if conf_thres_raw is None:
+            self.conf_thres = 0.25  # varsayılan confidence threshold
+        else:
+            self.conf_thres = float(conf_thres_raw)
+
+        iou_thres_raw = self.request.get_param("IOUThreshold")
+        if iou_thres_raw is None:
+            self.iou_thres = 0.45  # varsayılan iou threshold
+        else:
+            self.iou_thres = float(iou_thres_raw)
 
         # Model ve cihaz
         self.weight = self.bootstrap.get("model")  # YOLO model objesi
